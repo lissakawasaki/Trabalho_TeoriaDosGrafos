@@ -9,7 +9,7 @@ using namespace std;
 
 struct Node {
     int valor;
-    vector<Node*> vizinhos; // Lista de vizinhos
+    vector<Node*> vizinhos; 
     
     Node(int val) : valor(val) {}
 };
@@ -40,7 +40,7 @@ void Grafo::BuscaProfundidade(int inicio, vector<int>& listaAcesso, vector<int>&
 
     map<int, bool> visitado;
     vector<Node*> pilha;
-    vector<int> tempPercurso;  // Pilha auxiliar para inverter a ordem
+    vector<int> tempPercurso;  
 
     pilha.push_back(node[inicio]);
     visitado[inicio] = true;
@@ -50,9 +50,8 @@ void Grafo::BuscaProfundidade(int inicio, vector<int>& listaAcesso, vector<int>&
         pilha.pop_back();
 
         listaAcesso.push_back(atual->valor);  
-        tempPercurso.push_back(atual->valor);  // Armazena em ordem para inverter depois
+        tempPercurso.push_back(atual->valor);  
 
-        // Ordenando os vizinhos de forma reversa (maiores valores primeiro)
         vector<Node*> vizinhosOrdenados = atual->vizinhos;
         sort(vizinhosOrdenados.rbegin(), vizinhosOrdenados.rend(), [](Node* a, Node* b) {
             return a->valor < b->valor;  // Ordenação decrescente
@@ -79,7 +78,6 @@ bool Grafo::Busca(int inicio, int objetivo, vector<int>& caminho) {
     map<int, bool> visitado;
     map<int, int> anterior; 
 
-    // Pilha para a busca por profundidade
     vector<Node*> pilha;
     pilha.push_back(node[inicio]);
     visitado[inicio] = true;
