@@ -3,6 +3,7 @@
 #include <map>
 #include <limits>
 #include <algorithm>
+#include <windows.h>
 
 using namespace std;
 
@@ -38,8 +39,9 @@ void Grafo::BuscaProfundidade(int inicio, vector<int>& listaAcesso, vector<int>&
     if (node.find(inicio) == node.end()) return;
 
     map<int, bool> visitado;
-
     vector<Node*> pilha;
+    vector<int> tempPercurso;  // Pilha auxiliar para inverter a ordem
+
     pilha.push_back(node[inicio]);
     visitado[inicio] = true;
 
@@ -48,10 +50,15 @@ void Grafo::BuscaProfundidade(int inicio, vector<int>& listaAcesso, vector<int>&
         pilha.pop_back();
 
         listaAcesso.push_back(atual->valor);  
-        percurso.push_back(atual->valor);    
+        tempPercurso.push_back(atual->valor);  // Armazena em ordem para inverter depois
 
-        // Percorrendo os vizinhos da esquerda para a direita (sem rbegin/rend)
-        for (Node* vizinho : atual->vizinhos) {
+        // Ordenando os vizinhos de forma reversa (maiores valores primeiro)
+        vector<Node*> vizinhosOrdenados = atual->vizinhos;
+        sort(vizinhosOrdenados.rbegin(), vizinhosOrdenados.rend(), [](Node* a, Node* b) {
+            return a->valor < b->valor;  // Ordenação decrescente
+        });
+
+        for (Node* vizinho : vizinhosOrdenados) {
             if (!visitado[vizinho->valor]) {
                 pilha.push_back(vizinho);
                 visitado[vizinho->valor] = true;
@@ -59,10 +66,9 @@ void Grafo::BuscaProfundidade(int inicio, vector<int>& listaAcesso, vector<int>&
         }
     }
 
-    // Ao final da busca, invertendo o percurso para refletir da profundidade até o nó encontrado
-    reverse(percurso.begin(), percurso.end());
+    // Inverter a ordem para armazenar os mais profundos primeiro
+    percurso.assign(tempPercurso.rbegin(), tempPercurso.rend());
 }
-
 
 
 bool Grafo::Busca(int inicio, int objetivo, vector<int>& caminho) {
@@ -106,17 +112,21 @@ bool Grafo::Busca(int inicio, int objetivo, vector<int>& caminho) {
 
 int main() {
 
+    SetConsoleOutputCP(65001);
 
-    cout << "Trabalho de Teoria dos Grafos - Lissa Guirau Kawasaki - Busca Cega por Profundidade\n";
+    cout << "\t\tTrabalho de Teoria dos Grafos\n";
+    cout << "\tBusca Cega por Profundidade - Lissa Guirau Kawasaki\n\n";
     
     Grafo grafo;
     int noSuperior, noInferior;
 
-    cout << "Digite as conexões (noSuperior noInferior). Digite 0 0 para encerrar:\n";
+    cout << "Digite as conexões do grafo (nóSuperior nóInferior).\n";
+    cout << "Para encerrar a entrada, digite '0 0'.\n";
     
     while (true) {
-        cin >> noSuperior;
-        
+        cout << "Conexão (ex: 1 2): ";
+        cin >> noSuperior >> noInferior;
+
         if (cin.fail()) { // Caso o usuário insira algo inválido
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -124,9 +134,11 @@ int main() {
             continue;
         }
 
-        cin >> noInferior;
         if (noSuperior == 0 && noInferior == 0) break;
-
+        if (noSuperior < 0 || noInferior < 0) {
+            cout << "Os valores devem ser positivos.\n";
+            continue;
+        }
         grafo.Inserir(noSuperior, noInferior);
     }
 

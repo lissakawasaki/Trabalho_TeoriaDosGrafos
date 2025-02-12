@@ -5,6 +5,7 @@
 #include <queue>
 #include <functional>
 #include <algorithm>
+#include <windows.h>
 
 using namespace std;
 
@@ -78,15 +79,21 @@ vector<Vertice*> Grafo::getMenorCaminho(Vertice* destino) {
 }
 
 int main() {
-    cout << "Algoritmo de Dijkstra - Teoria dos Grafos\n";
+
+    SetConsoleOutputCP(65001);
+
+    cout << "\t\tTrabalho de Teoria dos Grafos\n";
+    cout << "\tBusca Mínima Dijkstra - Lissa Guirau Kawasaki\n\n";
     
     Grafo grafo;
     int noSuperior, noInferior;
     double peso;
 
-    cout << "Digite as conexões (noSuperior noInferior peso). Digite 0 0 0 para encerrar:\n";
+    cout << "Digite as conexões do grafo (nóSuperior nóInferior peso).\n";
+    cout << "Para encerrar a entrada, digite '0 0 0'.\n";
     
     while (true) {
+        cout << "Conexão (ex: 1 2 10): ";
         cin >> noSuperior;
         
         if (cin.fail()) { // Caso o usuário insira algo inválido

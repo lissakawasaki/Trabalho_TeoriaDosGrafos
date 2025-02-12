@@ -3,21 +3,21 @@
 #include <queue>
 #include <map>
 #include <limits>
+#include <windows.h>
 
 using namespace std;
 
 struct Node {
     int valor;
-    vector<Node*> vizinhos; // Lista de vizinhos
-    
+    vector<Node*> vizinhos;
+
     Node(int val) : valor(val) {}
 };
 
 class Grafo {
 public:
-    map<int, Node*> node; 
+    map<int, Node*> node;
 
-    Grafo() {} 
     void Inserir(int noSuperior, int noInferior);
     void BuscaLargura(int inicio, vector<int>& listaAcesso, vector<int>& percurso, int objetivo);
     bool Busca(int inicio, int objetivo, vector<int>& caminho);
@@ -48,9 +48,9 @@ void Grafo::BuscaLargura(int inicio, vector<int>& listaAcesso, vector<int>& perc
         fila.pop();
 
         listaAcesso.push_back(atual->valor);
-        percurso.push_back(atual->valor); 
+        percurso.push_back(atual->valor);
 
-        if (atual->valor == objetivo){
+        if (atual->valor == objetivo) {
             break;
         }
 
@@ -70,11 +70,11 @@ bool Grafo::Busca(int inicio, int objetivo, vector<int>& caminho) {
 
     queue<Node*> fila;
     map<int, bool> visitado;
-    map<int, int> anterior; // Para reconstrução do caminho
+    map<int, int> anterior;
 
     fila.push(node[inicio]);
     visitado[inicio] = true;
-    anterior[inicio] = -1; // O nó inicial não tem um nó anterior
+    anterior[inicio] = -1;
 
     while (!fila.empty()) {
         Node* atual = fila.front();
@@ -93,7 +93,7 @@ bool Grafo::Busca(int inicio, int objetivo, vector<int>& caminho) {
             if (!visitado[vizinho->valor]) {
                 fila.push(vizinho);
                 visitado[vizinho->valor] = true;
-                anterior[vizinho->valor] = atual->valor; // Registra quem veio antes
+                anterior[vizinho->valor] = atual->valor;
             }
         }
     }
@@ -101,43 +101,66 @@ bool Grafo::Busca(int inicio, int objetivo, vector<int>& caminho) {
     return false;
 }
 
-// Função principal
 int main() {
 
-    cout << "Trabalho de Teoria dos Grafos - Lissa Guirau Kawasaki - Busca Cega por Largura\n";
-    
+    SetConsoleOutputCP(65001);
+
+    cout << "\t\tTrabalho de Teoria dos Grafos\n";
+    cout << "\tBusca Cega por Largura - Lissa Guirau Kawasaki\n\n";
+
     Grafo grafo;
     int noSuperior, noInferior;
 
-    cout << "Digite as conexões (noSuperior noInferior). Digite 0 0 para encerrar:\n";
-    
+    cout << "Digite as conexões do grafo (nóSuperior nóInferior).\n";
+    cout << "Para encerrar a entrada, digite '0 0'.\n";
+
     while (true) {
-        cin >> noSuperior;
-        
-        if (cin.fail()) { // Caso o usuário insira algo inválido
+        cout << "Conexão (ex: 1 2): ";
+        cin >> noSuperior >> noInferior;
+
+        if (cin.fail()) {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "Entrada inválida! Tente novamente.\n";
+            cout << "Entrada inválida! Tente Novamentes.\n";
             continue;
         }
 
-        cin >> noInferior;
         if (noSuperior == 0 && noInferior == 0) break;
+        if (noSuperior < 0 || noInferior < 0) {
+            cout << "Os valores devem ser positivos.\n";
+            continue;
+        }
 
         grafo.Inserir(noSuperior, noInferior);
     }
 
     int inicio, objetivo;
-    cout << "\nDigite o nó inicial para a busca: ";
-    cin >> inicio;
 
-    if (grafo.node.find(inicio) == grafo.node.end()) {
-        cout << "Erro: O nó inicial não existe no grafo.\n";
-        return 1;
+    while (true) {
+        cout << "\nDigite o nó inicial para a busca: ";
+        cin >> inicio;
+
+        if (cin.fail() || grafo.node.find(inicio) == grafo.node.end()) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Erro: O nó inicial deve existir no grafo.\n";
+            continue;
+        }
+        break;
     }
 
-    cout << "Digite o nó objetivo para buscar: ";
-    cin >> objetivo;
+    while (true) {
+        cout << "Digite o nó objetivo para buscar: ";
+        cin >> objetivo;
+
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Entrada inválida! Insira um número válido.\n";
+            continue;
+        }
+        break;
+    }
 
     vector<int> listaAcesso;
     vector<int> percurso;
